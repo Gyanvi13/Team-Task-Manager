@@ -15,21 +15,7 @@ const path = require('path');
 
 const app = express();
 
-// Serve client static files when present (built Vite production files)
-try {
-  const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
-
-  if (fs.existsSync(clientDist)) {
-    app.use(express.static(clientDist));
-
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(clientDist, 'index.html'));
-    });
-  }
-} catch (err) {
-  // If anything goes wrong, continue without serving static files
-  console.warn('Client static files not served:', err.message || err);
-}
+// NOTE: static serving is added after API routes so API endpoints are reachable.
 
 const normalizeOrigin = (value) => {
   if (!value) {
@@ -96,6 +82,22 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/users', userRoutes);
+
+// Serve client static files when present (built Vite production files)
+try {
+  const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
+
+  if (fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(clientDist, 'index.html'));
+    });
+  }
+} catch (err) {
+  // If anything goes wrong, continue without serving static files
+  console.warn('Client static files not served:', err.message || err);
+}
 
 app.use(notFound);
 app.use(errorHandler);
