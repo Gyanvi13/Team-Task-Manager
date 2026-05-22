@@ -2,22 +2,22 @@
 
 A mini Jira/Trello-style team task manager with a React + Vite frontend and an Express + MongoDB backend.
 
-## Stack
+## What it does
+
+- Admin users can create projects, add team members, create tasks, assign work, and view analytics.
+- Team members can log in, view assigned tasks, and update task status.
+
+## Tech Stack
 
 - Frontend: React, Vite, Tailwind CSS, Axios, React Router DOM, React Toastify
-- Backend: Node.js, Express.js, MongoDB Atlas, JWT authentication, bcryptjs
+- Backend: Node.js, Express, MongoDB Atlas, JWT authentication, bcryptjs
 
-## Structure
+## Project Structure
 
 - `client/` - React app
 - `server/` - Express API
 
-## Features
-
-- Admin: create projects, add team members, create tasks, assign tasks, change task status, view analytics/dashboard
-- Member: login, view assigned tasks, update task status, view project details
-
-## Setup
+## Local Setup
 
 1. Install dependencies from the repository root:
 
@@ -25,18 +25,18 @@ A mini Jira/Trello-style team task manager with a React + Vite frontend and an E
 npm install
 ```
 
-2. Create environment files:
+2. Create the environment files:
 
 - `server/.env`
 - `client/.env`
 
-3. Start both apps:
+3. Start the app in development mode:
 
 ```bash
 npm run dev
 ```
 
-## Environment
+## Environment Variables
 
 ### `server/.env`
 
@@ -53,44 +53,51 @@ CLIENT_URL=http://localhost:5173
 VITE_API_URL=http://localhost:5000/api
 ```
 
-## API Overview
+## Production / Railway
+
+The app is set up for Railway deployment.
+
+- Backend service should use the `server/` workspace and start with `npm start`.
+- The server serves the built client when `client/dist` is available.
+- `server/package.json` includes a `postinstall` step that builds the client during deploy.
+- Set `MONGODB_URI`, `JWT_SECRET`, and `CLIENT_URL` on Railway.
+- Set `VITE_API_URL` for the frontend if you deploy it separately.
+
+Example backend values:
+
+```env
+MONGODB_URI=your_mongodb_atlas_connection_string
+JWT_SECRET=your_jwt_secret
+CLIENT_URL=https://your-frontend-domain.example
+```
+
+## API Endpoints
 
 - `POST /api/auth/login`
 - `GET /api/auth/me`
-- `POST /api/projects`
 - `GET /api/projects`
+- `POST /api/projects`
+- `GET /api/tasks`
 - `POST /api/tasks`
 - `PATCH /api/tasks/:id/status`
 - `GET /api/analytics/overview`
 
-## Notes
+## Seed Data
 
-- The backend expects MongoDB Atlas for persistence.
-- JWT tokens are stored in the client and attached to API requests.
-- On first run, the server seeds demo accounts and starter data:
-	- Admin: `admin@teamtask.local` / `password123`
-	- Member: `member@teamtask.local` / `password123`
+On first run, the server seeds demo accounts and starter data:
 
-## Railway Deployment
+- Admin: `admin@teamtask.local` / `password123`
+- Member: `member@teamtask.local` / `password123`
 
-This project is intended to be deployed on Railway for submission.
+## Troubleshooting
 
-- Backend service: use the `server/` folder, build with `npm install`, start with `npm start`.
-- Frontend service: use the `client/` folder, build with `npm install && npm run build`, start with `npm start`.
-- Set `VITE_API_URL` on the frontend to your Railway backend URL plus `/api`.
-- Set `CLIENT_URL` on the backend to your Railway frontend URL.
-- Keep `MONGODB_URI` pointed at MongoDB Atlas.
+- If Railway shows `Not Found - /`, make sure the client has been built and the server is serving `client/dist`.
+- If API calls fail, confirm `VITE_API_URL` points to the deployed backend and `CLIENT_URL` matches the deployed frontend origin.
+- If the server fails to start, verify `MONGODB_URI` and `JWT_SECRET` are set correctly.
 
-Recommended Railway env vars:
+## Quick Checks
 
-- Backend: `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL`, `PORT`
-- Frontend: `VITE_API_URL`
-
-## Submission Checklist
-
-- [ ] Railway backend deployed and healthy
-- [ ] Railway frontend deployed and loading
-- [ ] Login and signup verified in production
-- [ ] Admin dashboard verified for admin account
-- [ ] Member dashboard verified for member account
-- [ ] Projects, tasks, and status updates verified end-to-end
+```bash
+npm run dev
+curl http://localhost:5000/api/health
+```
