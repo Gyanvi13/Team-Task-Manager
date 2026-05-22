@@ -24,19 +24,43 @@ const normalizeOrigin = (value) => {
   }
 };
 
-// Temporary: allow any origin to avoid preflight/CORS errors while diagnosing
-// the production issue. This will be tightened after verification.
-app.use((req, res, next) => {
-  // Log incoming origin for debugging
-  if (req.headers && req.headers.origin) {
-    console.log('Incoming Origin:', req.headers.origin);
-  }
-  next();
-});
+const allowedOrigins = new Set(
+  [
+    process.env.CLIENT_URL,
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'http://localhost:5175',
+    'http://127.0.0.1:5173',
+    'http://127.0.0.1:5174',
+    'http://127.0.0.1:5175',
+  ]
+    .map(normalizeOrigin)
+    .filter(Boolean)
+);
 
 app.use(
   cors({
-    origin: true,
+    origin: (origin, callback) => {
+      const normalizedOrigin = normalizeOrigin(origin);
+
+      if (!normalizedOrigin) {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.has(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      if (/^https:\/\/[a-z0-9-]+\.vercel\.app$/i.test(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      if (/^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
     credentials: true,
   })
 );

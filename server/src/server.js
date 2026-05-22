@@ -15,11 +15,24 @@ const assertRequiredEnv = () => {
   }
 };
 
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught exception:', error);
+});
+
+process.on('unhandledRejection', (error) => {
+  console.error('Unhandled rejection:', error);
+});
+
 const start = async () => {
   try {
     assertRequiredEnv();
+    console.log('Environment validation passed');
+    console.log('Connecting to MongoDB...');
     await connectDB();
+    console.log('MongoDB connected');
+    console.log('Seeding initial data if needed...');
     await seedData();
+    console.log('Seed step completed');
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });

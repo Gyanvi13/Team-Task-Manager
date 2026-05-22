@@ -43,13 +43,21 @@ export const AuthProvider = ({ children }) => {
     return data.user;
   };
 
+  const signup = async (name, email, password) => {
+    const { data } = await api.post('/auth/register', { name, email, password });
+    localStorage.setItem('ttm_token', data.token);
+    localStorage.setItem('ttm_user', JSON.stringify(data.user));
+    setUser(data.user);
+    return data.user;
+  };
+
   const logout = () => {
     localStorage.removeItem('ttm_token');
     localStorage.removeItem('ttm_user');
     setUser(null);
   };
 
-  const value = useMemo(() => ({ user, loading, login, logout }), [user, loading]);
+  const value = useMemo(() => ({ user, loading, login, signup, logout }), [user, loading]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

@@ -70,3 +70,27 @@ VITE_API_URL=http://localhost:5000/api
 - On first run, the server seeds demo accounts and starter data:
 	- Admin: `admin@teamtask.local` / `password123`
 	- Member: `member@teamtask.local` / `password123`
+
+## Railway Deployment
+
+This project is intended to be deployed on Railway for submission.
+
+- Backend service: use the `server/` folder, build with `npm install`, start with `npm start`.
+- Frontend service: use the `client/` folder, build with `npm install && npm run build`, start with `npm start`.
+- Set `VITE_API_URL` on the frontend to your Railway backend URL plus `/api`.
+- Set `CLIENT_URL` on the backend to your Railway frontend URL.
+- Keep `MONGODB_URI` pointed at MongoDB Atlas.
+
+Recommended Railway env vars:
+
+- Backend: `MONGODB_URI`, `JWT_SECRET`, `CLIENT_URL`, `PORT`
+- Frontend: `VITE_API_URL`
+
+## Submission Checklist
+
+- [ ] Railway backend deployed and healthy
+- [ ] Railway frontend deployed and loading
+- [ ] Login and signup verified in production
+- [ ] Admin dashboard verified for admin account
+- [ ] Member dashboard verified for member account
+- [ ] Projects, tasks, and status updates verified end-to-end
