@@ -12,29 +12,31 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-const allowedOrigins = new Set([
-  process.env.CLIENT_URL,
-  'http://localhost:5173',
-  'http://localhost:5174',
-  'http://localhost:5175',
-  'http://127.0.0.1:5173',
-  'http://127.0.0.1:5174',
-  'http://127.0.0.1:5175',
-]);
+const normalizeOrigin = (value) => {
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return new URL(value).origin;
+  } catch (error) {
+    return value.replace(/\/$/, '');
+  }
+};
+
+// Temporary: allow any origin to avoid preflight/CORS errors while diagnosing
+// the production issue. This will be tightened after verification.
+app.use((req, res, next) => {
+  // Log incoming origin for debugging
+  if (req.headers && req.headers.origin) {
+    console.log('Incoming Origin:', req.headers.origin);
+  }
+  next();
+});
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) {
-        return callback(null, true);
-      }
-
-      if (/^https?:\/\/(localhost|127\.0\.0\.1):\d+$/.test(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error('Not allowed by CORS'));
-    },
+    origin: true,
     credentials: true,
   })
 );
