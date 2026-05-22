@@ -10,7 +10,26 @@ const taskRoutes = require('./routes/taskRoutes');
 const analyticsRoutes = require('./routes/analyticsRoutes');
 const userRoutes = require('./routes/userRoutes');
 
+const fs = require('fs');
+const path = require('path');
+
 const app = express();
+
+// Serve client static files when present (built Vite production files)
+try {
+  const clientDist = path.join(__dirname, '..', '..', 'client', 'dist');
+
+  if (fs.existsSync(clientDist)) {
+    app.use(express.static(clientDist));
+
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(clientDist, 'index.html'));
+    });
+  }
+} catch (err) {
+  // If anything goes wrong, continue without serving static files
+  console.warn('Client static files not served:', err.message || err);
+}
 
 const normalizeOrigin = (value) => {
   if (!value) {

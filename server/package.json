@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
-    "build": "echo \"Server build not required\""
+    "build": "echo \"Server build not required\"",
+    "postinstall": "cd ../client && npm ci && npm run build"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
